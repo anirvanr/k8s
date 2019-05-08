@@ -98,7 +98,17 @@ vagrant@node-1:~$ sudo swapoff -a
 vagrant@node-1:~$ sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 vagrant@node-1:~$ sudo kubeadm join 192.168.50.10:6443 --token xg0vab.oiy36vp31elpixdx \
     --discovery-token-ca-cert-hash sha256:358af7ecee694b1df70f088c6bce6d3f0dcda61380a057bb995ced7c7d728f78
+```
 
+"kubectl exec..", I get:
+
+kubectl exec -it ...... -- bash
+
+`error: unable to upgrade connection: pod does not exist`
+
+This happens in Vagrant if you're running a multi-box setup because the kubelet on the workers end up binding services to the wrong ethernet interface. This error is the master attempting a connection to the wrong address in order to pull logs. The fix is to modify the config for the kubelet, as described in this blog post: https://medium.com/@joatmon08/playing-with-kubeadm-in-vagrant-machines-part-2-bac431095706
+
+```
 vagrant@node-1:~$ sudo vim /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 Environment="KUBELET_EXTRA_ARGS=--node-ip=192.168.50.XX"
 
