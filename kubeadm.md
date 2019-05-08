@@ -100,6 +100,8 @@ vagrant@node-1:~$ sudo kubeadm join 192.168.50.10:6443 --token xg0vab.oiy36vp31e
     --discovery-token-ca-cert-hash sha256:358af7ecee694b1df70f088c6bce6d3f0dcda61380a057bb995ced7c7d728f78
 ```
 
+https://github.com/kubernetes/kubernetes/issues/60835
+
 "kubectl exec..", I get:
 
 kubectl exec -it ...... -- bash
