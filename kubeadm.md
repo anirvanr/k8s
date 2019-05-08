@@ -1,7 +1,8 @@
 We will be setting up a Kubernetes cluster that will consist of one master and two worker nodes. All the nodes will run Ubuntu Xenial 64-bit OS.
 
 Here is my full Vagrantfile gist. Run vagrant up to bring up a 3 node.
-```
+
+```bash
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 IMAGE_NAME = "ubuntu/xenial64"
@@ -30,8 +31,10 @@ Vagrant.configure("2") do |config|
     end
 end
 ```
+
 Setup Master
-```
+============
+
 vagrant ssh k8s-master
 vagrant@k8s-master:~$
 vagrant@k8s-master:~$ sudo apt-get update
@@ -78,9 +81,11 @@ kube-system   kube-controller-manager-k8s-master   1/1     Running   0          
 kube-system   kube-flannel-ds-amd64-2w9gr          1/1     Running   0          109s
 kube-system   kube-proxy-8r8cc                     1/1     Running   0          13m
 kube-system   kube-scheduler-k8s-master            1/1     Running   0          12m
-```
+
+
 Setup nodes (all)
-```
+=================
+
 vagrant ssh node-1
 vagrant@node-1:~$ sudo apt-get update
 vagrant@node-1:~$ sudo apt-get install docker.io -y
@@ -99,18 +104,19 @@ Environment="KUBELET_EXTRA_ARGS=--node-ip=192.168.50.XX"
 
 vagrant@node-1:~$ sudo systemctl daemon-reload
 vagrant@node-1:~$ sudo systemctl stop kubelet && sudo systemctl start kubelet
-```
+
 Now go to master node and run below command to check master and slave node status
-```
+
 vagrant@k8s-master:~$ kubectl get nodes
 NAME         STATUS   ROLES    AGE   VERSION
 k8s-master   Ready    master   79m   v1.14.1
 node-1       Ready    <none>   48m   v1.14.1
 node-2       Ready    <none>   44s   v1.14.1
-```
-Simple Smoke Test
 
-```
+Simple Smoke Test
+=================
+
+
 vagrant@k8s-master:~$ kubectl run example --image=k8s.gcr.io/echoserver:1.10 --port=8080
 vagrant@k8s-master:~$ kubectl expose deployment example --type=NodePort
 vagrant@k8s-master:~$ kubectl get service
@@ -119,28 +125,27 @@ example      NodePort    10.105.34.67   <none>        8080:31406/TCP   23m
 vagrant@k8s-master:~$ kubectl get pod -o wide
 NAME                       READY   STATUS    RESTARTS   AGE     IP           NODE     NOMINATED NODE   READINESS GATES
 example-66c89bfbb6-rlqbl   1/1     Running   0          5m46s   10.244.2.3   node-2   <none>           <none>
-```
+
 Open `http://<node-2-ip>:31406` in browser
 
 
 Drain node
-```
+
 vagrant@k8s-master:~$ kubectl drain node-2 --ignore-daemonsets
 vagrant@k8s-master:~$ kubectl get node
 NAME         STATUS                     ROLES    AGE    VERSION
 k8s-master   Ready                      master   148m   v1.14.1
 node-1       Ready                      <none>   117m   v1.14.1
 node-2       Ready,SchedulingDisabled   <none>   69m    v1.14.1
-```
+
 vagrant halt node-2
-```
+
 vagrant@k8s-master:~$ kubectl get nodes
 NAME         STATUS                     ROLES    AGE    VERSION
 k8s-master   Ready                      master   153m   v1.14.1
 node-1       Ready                      <none>   122m   v1.14.1
 node-2       Ready,SchedulingDisabled   <none>   74m    v1.14.1
-```
+
 Mark node as schedulable again
-```
+
 vagrant@k8s-master:~$ kubectl uncordon node-2
-```
