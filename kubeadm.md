@@ -110,7 +110,7 @@ This happens in Vagrant if you're running a multi-box setup because the kubelet 
 
 ```
 vagrant@node-1:~$ sudo vim /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-Environment="KUBELET_EXTRA_ARGS=--node-ip=192.168.50.XX"
+Environment="KUBELET_EXTRA_ARGS=--node-ip=192.168.50.11" # for node-2 node-ip=192.168.50.12
 
 vagrant@node-1:~$ sudo systemctl daemon-reload
 vagrant@node-1:~$ sudo systemctl stop kubelet && sudo systemctl start kubelet
