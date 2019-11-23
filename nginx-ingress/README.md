@@ -9,7 +9,7 @@ kubectl run echoheaders --image=k8s.gcr.io/echoserver:1.4 --replicas=1 --port=80
 kubectl expose deployment echoheaders --port=80 --target-port=8080 --name=echoheaders-x
 kubectl expose deployment echoheaders --port=80 --target-port=8080 --name=echoheaders-y
 
-kubectl apply -f ingress-echoheaders.yaml
+kubectl apply -f https://raw.githubusercontent.com/anirvanr/k8s/master/nginx-ingress/ingress-echoheaders.yaml
 
 kubectl get services ingress-nginx -n kube-ingress -owide
 
